@@ -10,7 +10,7 @@ const Header = () => {
         }
     }
   return (
-    <div className='b-white border-b shadow-sm max-w-6xl mx-auto sticky top-0 z-50 py-3'>
+    <div className='b-white border-b shadow-sm max-w-6xl mx-auto sticky top-0 z-50 py-3 w-full'>
       <header className='flex justify-between items-center px-8'>
         <div>
             <img src="https://static.rdc.moveaws.com/images/logos/rdc-logo-default.svg" 
