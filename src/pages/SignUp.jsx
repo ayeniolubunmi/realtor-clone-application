@@ -2,6 +2,11 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {BsFillEyeSlashFill,BsFillEyeFill} from 'react-icons/bs';
 import OAuth from '../components/OAuth';
+import { db } from '../firebase';
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { serverTimestamp, setDoc, doc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -10,9 +15,31 @@ const SignUp = () => {
         password:"",
     })
     const {name,email,password}=formData;
+    const navigate = useNavigate()
     const [showPassword, setShowPassword]=useState(false)
-    const onChange=()=>{
-
+    const onChange=(e)=>{
+        setFormData((prevState)=>({
+            ...prevState,
+            [e.target.id]:e.target.value,
+        }))
+    }
+    const onSubmit=async(e)=>{
+        e.preventDefault();
+        try {
+            const auth = getAuth();
+            const userCredential = await createUserWithEmailAndPassword(auth,email,password)
+            updateProfile(auth.currentUser,{
+                displayName:name
+            })
+            const user = userCredential.user;
+            const formCopyData = {...formData}
+            delete formCopyData.password;
+            formCopyData.timestamp = serverTimestamp();
+            await setDoc(doc(db, "users", user.uid), formData);
+            navigate('/');
+        } catch (error) {
+            toast.error("Something went wrong with the registration")
+        }
     }
   return (
     <section>
@@ -23,7 +50,7 @@ const SignUp = () => {
                 src="https://images.unsplash.com/photo-1575908539614-ff89490f4a78?q=80&w=1466&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="keys" className='w-full rounded-2xl' />
             </div>
             <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-                <form>
+                <form onSubmit={onSubmit}>
                 <input 
                     type="text" 
                     id="name" 
