@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import OAuth from '../components/OAuth';
 import { Link } from 'react-router-dom';
+import { getAuth, sendPasswordResetEmail } from 'firebase/auth';
+import { toast } from 'react-toastify';
 
 const ForgotPassword = () => {
-  const[formData, setFormData] = useState({
-    email:'',
-  })
-  const{email}=formData;
-  const onChange=()=>{
-
+  const [email, setEmail]=useState("")
+  const onChange=(e)=>{
+    setEmail(e.target.value);
+  }
+  const onSubmit=async()=>{
+    try {
+        const auth = getAuth();
+        await sendPasswordResetEmail(auth,email);
+        toast.success("Email sent successfully")
+        
+    } catch (error) {
+        toast.error("Could send reset password");
+    }
   }
   return (
     <section>
@@ -19,7 +28,7 @@ const ForgotPassword = () => {
                 src="https://images.unsplash.com/photo-1575908539614-ff89490f4a78?q=80&w=1466&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="keys" className='w-full rounded-2xl' />
             </div>
             <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-                <form>
+                <form onSubmit={onSubmit}>
                     <input 
                     type="email" 
                     id="email" 
@@ -46,7 +55,7 @@ const ForgotPassword = () => {
                     hover:bg-blue-600 
                     active:bg-blue-700 w-full 
                     rounded-xl text-white 
-                    shadow-md hover:shawdow-lg active:shadow-lg">Reset password</button>
+                    shadow-md hover:shawdow-lg active:shadow-lg uppercase">Send Reset password</button>
                     <div 
                     className='my-4 flex items-center before:flex-1 before:border-t before:text-gray-700 after:flex-1 after:border-t after:text-gray-700'>
                         <p className='text-center font-semibold mx-4'>OR</p>
