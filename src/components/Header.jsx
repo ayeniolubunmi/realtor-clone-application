@@ -10,7 +10,7 @@ const Header = () => {
     useEffect(()=>{
     onAuthStateChanged(auth,(user)=>{
       if(user){
-        setPageState("Profile")
+      setPageState("Profile")
       }
       setPageState("Sign in")
     })
@@ -29,8 +29,12 @@ const Header = () => {
         </div>
         <div>
             <ul className='flex space-x-10'>
-                <li className={`text-sm border-b-[3px] text-gray-600 py-3 border-transparent cursor-pointer ${pathMathRoute("/") && "text-black border-b-red-500"}`} onClick={()=>navigate("/")}>Home</li>
-                <li  className={`text-sm border-b-[3px] text-gray-600 py-3 border-transparent cursor-pointer ${pathMathRoute("/offers") && "text-black border-b-red-500"}`} onClick={()=>navigate("/offers")}>Offers</li>
+                <li className={`text-sm border-b-[3px] text-gray-600 py-3 border-transparent cursor-pointer ${pathMathRoute("/") && "text-black border-b-red-500"}`} onClick={()=>navigate("/")}>
+                  Home
+                </li>
+                <li  className={`text-sm border-b-[3px] text-gray-600 py-3 border-transparent cursor-pointer ${pathMathRoute("/offers") && "text-black border-b-red-500"}`} onClick={()=>navigate("/offers")}>
+                  Offers
+                </li>
                 <li  className={`text-sm border-b-[3px] text-gray-600 py-3 border-transparent cursor-pointer ${(pathMathRoute("/sign-in") || pathMathRoute("/profile")) && "text-black border-b-red-500"}`} 
                 onClick={()=>navigate("/profile")}>
                   {pageState}

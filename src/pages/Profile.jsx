@@ -72,7 +72,8 @@ const Profile = () => {
           <p 
           className='cursor-pointer
            text-blue-400
-            hover:text-blue-600 transition duration-200 ease-in-out' onClick={onLoggedOut}>Sign out</p>
+            hover:text-blue-600 transition duration-200 ease-in-out' 
+            onClick={onLoggedOut}>Sign out</p>
         </div>
       </form>
      </div>
