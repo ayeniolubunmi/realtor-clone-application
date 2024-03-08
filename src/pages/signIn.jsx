@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { BsFillEyeFill, BsFillEyeSlashFill } from "react-icons/bs";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import OAuth from '../components/OAuth';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { toast } from 'react-toastify';
 
 const SignIn = () => {
     const [formData, setFormData] = useState({
@@ -9,13 +11,26 @@ const SignIn = () => {
         password:"",
     })
     const{email,password}=formData;
-    const [showPassword, setShowPassword]=useState(false)
+    const [showPassword, setShowPassword]=useState(false);
+    const navigate = useNavigate()
     const onChange=(e)=>{
         e.preventDefault()
         setFormData((prevState)=>({
             ...prevState,
             [e.target.id]:e.target.value,
         }))
+    }
+    const onSubmit=async()=>{
+        try {
+            const auth = getAuth();
+            const userCredential = signInWithEmailAndPassword(auth,email,password);
+            if(userCredential.user){
+                navigate("/")
+            }
+        } catch (error) {
+           toast.error("Bad user credential"); 
+        }
+
     }
   return (
     <section>
@@ -26,7 +41,7 @@ const SignIn = () => {
                 src="https://images.unsplash.com/photo-1575908539614-ff89490f4a78?q=80&w=1466&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="keys" className='w-full rounded-2xl' />
             </div>
             <div className='w-full md:w-[67%] lg:w-[40%] lg:ml-20'>
-                <form>
+                <form onSubmit={onSubmit}>
                     <input 
                     type="email" 
                     id="email" 
@@ -40,7 +55,7 @@ const SignIn = () => {
                         id="password" 
                         value={password} 
                         onChange={onChange} 
-                        placeholder='Enter email address'
+                        placeholder='Enter password'
                         className='w-full text-xl text-gray-600 bg-white px-4 py-2 rounded-xl border-gray-300'/>
                         {showPassword ? 
                         <BsFillEyeSlashFill className='absolute right-3 top-3 cursor-pointer' onClick={()=>setShowPassword((prevState)=>!prevState)} />

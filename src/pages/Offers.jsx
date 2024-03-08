@@ -2,9 +2,9 @@ import React from 'react';
 
 const Offers = () => {
   return (
-    <div>
-      Offers
-    </div>
+    <section className=''>
+     <h1 className='text-xl text-center font-bold mt-6'>My profile</h1>
+    </section>
   );
 }
 
