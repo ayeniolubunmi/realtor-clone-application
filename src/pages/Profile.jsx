@@ -1,6 +1,10 @@
-import { getAuth } from 'firebase/auth';
+import { getAuth, updateProfile } from 'firebase/auth';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {db} from '../firebase'
+import { doc, updateDoc } from 'firebase/firestore';
+import { toast } from 'react-toastify';
+
 
 const Profile = () => {
   const auth = getAuth();
@@ -9,11 +13,35 @@ const Profile = () => {
     email:auth?.currentUser?.email,
   })
   const{name,email}=formData;
+  const [changeDetails,setChangeDetails] = useState(false)
   const navigate =useNavigate()
   const onLoggedOut=()=>{
     const auth = getAuth();
     auth.signOut()
     navigate('/');
+  }
+  const onChange=(e)=>{
+    setFormData((prevState)=>({
+      ...prevState,
+      [e.target.id]:e.target.value,
+    }))
+  }
+  const onSubmit=async()=>{
+    try {
+      const auth = getAuth();
+      if(auth.currentUser.displayName !== name){
+        await updateProfile(auth.currentUser,{
+          displayName:name,
+        });
+        const docRef = doc(db,"users", auth.currentUser.uid);
+        await updateDoc(docRef,{
+          name,
+        })
+      }
+      toast.success("Update profile details")
+    } catch (error) {
+      toast.error('Could not update the profile details')
+    }
   }
   return (
     <section className=' flex flex-col justify-center items-center max-w-6xl mx-auto'>
@@ -21,10 +49,12 @@ const Profile = () => {
      <div className='w-full md:w-[50%] mt-6 px-3'>
       <form>
         <input 
-        type="name" 
+        id="name" 
+        type='text'
         value={name} 
-        disabled 
-        className='w-full px-4 py-2 border text-gray-700 border-gray-600 rounded-xl text-xl bg-white mt-6' />
+        disabled={!changeDetails}
+        onChange={onChange}
+        className={`w-full px-4 py-2 border text-gray-700 border-gray-600 rounded-xl text-xl bg-white mt-6 ${changeDetails && "bg-red-600 hover:bg-red-200"}`} />
         <input 
         type="email" 
         value={email} disabled 
@@ -32,8 +62,11 @@ const Profile = () => {
         <div className='flex justify-between items-center whitespace-nowrap mt-6 text-sm sm:text-lg'>
           <p className='flex items-center'>
             Do you want to change? 
-            <span className='cursor-pointer text-red-400 hover:text-red-600 ml-1 transition duration-200 ease-in-out'>
-              Edit
+            <span onClick={()=>{
+              changeDetails && onSubmit();
+              setChangeDetails((prevState)=>!prevState);
+            }} className={`cursor-pointer text-red-400 hover:text-red-600 ml-1 transition duration-200 ease-in-out`}>
+              {changeDetails?"Apply change":"Edit"}
             </span>
           </p>
           <p 
@@ -46,5 +79,4 @@ const Profile = () => {
     </section>
   );
 }
-
 export default Profile;
